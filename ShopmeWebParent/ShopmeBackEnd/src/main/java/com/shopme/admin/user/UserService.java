@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class UserService {
@@ -29,7 +30,27 @@ public class UserService {
     }
 
     public void save(User user){
-        encodePassword(user);
+        //Get ID user is NOT NULL
+        boolean isUpdatingUser = (user.getId() != null);
+
+        //ID NOT NULL -> user đang update
+        if (isUpdatingUser){
+            User existingUser = userRepository.findById(user.getId()).get();
+            //Nếu password người dùng trong form isEmpty
+            if (user.getPassword().isEmpty()){
+                //New password = old password
+                user.setPassword(existingUser.getPassword());
+            }
+            //Nếu password người dùng trong form NOT isEmpty
+            else {
+                encodePassword(user); //Mã hóa password
+            }
+        }
+        //ID NULL
+        else {
+            encodePassword(user);
+        }
+
         userRepository.save(user);
     }
 
@@ -40,9 +61,38 @@ public class UserService {
         user.setPassword(encodedPassword);
     }
 
-    public boolean isEmailUnique(String email){
+    public boolean isEmailUnique(Integer id, String email){
         User userByEmail = userRepository.getUserByEmail(email);
 
-        return userByEmail == null;
+        //Check email người dùng tồn tại tại không
+        if (userByEmail == null)
+            return true; //Email là duy nhất
+
+        //Check ID chưa tồn tại, đồng nghĩa người dùng đang thêm mới
+        boolean isCreateingNew = (id == null);
+
+        //Nếu ID user chưa tồn tại
+        if (isCreateingNew){
+            //Nếu email đã tồn tại
+            if (userByEmail != null) return false; //Không cho user submit email đó
+        }
+        //Nếu ID tồn tại, đồng nghĩa người dùng đang sửa email
+        else {
+            //Kiểm tra email đã trùng với id người khác chưa
+            if (userByEmail.getId() != id){
+                return false; //Email này không phải là duy nhất
+            }
+        }
+
+        return true;
+    }
+
+    public User get(Integer id) throws UserNotFoundException {
+        try {
+            return userRepository.findById(id).get();
+        }catch (NoSuchElementException ex){
+            throw new UserNotFoundException("Could not found any user with ID: " + id);
+        }
+
     }
 }
