@@ -4,6 +4,7 @@ import com.shopme.admin.FileUploadUtil;
 import com.shopme.common.entity.Role;
 import com.shopme.common.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -24,8 +25,40 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/users")
-    public String listAll(Model model){
-        List<User> listUsers = userService.listAll();
+    public String listFirstPage(Model model){
+//        List<User> listUsers = userService.listAll();
+//        model.addAttribute("listUsers", listUsers);
+//
+//        return "users";
+
+        return listByPage(1, model);
+    }
+
+    /*
+    Pagination
+    */
+    @GetMapping("/users/page/{pageNumber}")
+    public String listByPage(@PathVariable(name = "pageNumber") int pageNumber, Model model){
+        Page<User> page = userService.listByPage(pageNumber);
+        //Lấy ra nội dung của của page
+        List<User> listUsers = page.getContent();
+
+        /*System.out.println("pageNumber = " + pageNumber);
+        System.out.println("Total elements = " + page.getTotalElements());
+        System.out.println("Total pages = " + page.getTotalPages());*/
+
+        long startCount = (pageNumber - 1) * UserService.USER_PER_PAGE + 1;
+        long endCount = startCount + UserService.USER_PER_PAGE - 1;
+
+        if (endCount > page.getTotalElements()){
+            endCount = page.getTotalElements();
+        }
+
+        model.addAttribute("currentPage", pageNumber);
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("startCount", startCount);
+        model.addAttribute("endCount", endCount);
+        model.addAttribute("totalItems", page.getTotalElements());
         model.addAttribute("listUsers", listUsers);
 
         return "users";

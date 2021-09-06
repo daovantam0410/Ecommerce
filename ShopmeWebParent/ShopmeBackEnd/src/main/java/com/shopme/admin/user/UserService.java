@@ -3,6 +3,9 @@ package com.shopme.admin.user;
 import com.shopme.common.entity.Role;
 import com.shopme.common.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +26,18 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    public static final int USER_PER_PAGE = 4;
+
     List<User> listAll(){
         return (List<User>) userRepository.findAll();
+    }
+
+    /*
+    Pagination
+    */
+    public Page<User> listByPage(int pageNumber){
+        Pageable pageable = PageRequest.of(pageNumber - 1,  USER_PER_PAGE);
+        return userRepository.findAll(pageable);
     }
 
     public List<Role> listRoles(){
