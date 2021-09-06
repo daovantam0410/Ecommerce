@@ -1,15 +1,20 @@
 package com.shopme.admin.user;
 
+import com.shopme.admin.FileUploadUtil;
 import com.shopme.common.entity.Role;
 import com.shopme.common.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -42,9 +47,21 @@ public class UserController {
     }
 
     @PostMapping("/users/save")
-    public String saveUser(User user, RedirectAttributes redirectAttributes){
-        System.out.println(user);
-        userService.save(user);
+    public String saveUser(User user, RedirectAttributes redirectAttributes, @RequestParam("image") MultipartFile multipartFile) throws IOException {
+        if (!multipartFile.isEmpty()){
+            //Get path file name
+            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+
+            //Set image for user
+            user.setPhotos(fileName);
+            User saveUser = userService.save(user);
+
+            //Get path folder image as ID user
+            String uploadDir = "user-photos/" + saveUser.getId();
+
+            //Save image
+            FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+        }
 
         redirectAttributes.addFlashAttribute("message", "The user has been saved successfully.");
 
