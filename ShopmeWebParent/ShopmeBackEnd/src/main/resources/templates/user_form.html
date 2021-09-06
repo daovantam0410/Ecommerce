@@ -123,7 +123,7 @@
                 <label class="col-sm-4 col-form-label">Photos</label>
                 <div class="col-sm-8">
                     <input type="file" id="fileImage" name="image" accept="image/png, image/jpeg, image/jpg, image/PNG, image/JPEG, image/JPG" class="mb-2" />
-                    <img id="thumbnail" th:src="@{/images/default-user.png}" alt="photos reviews" class="img-fluid" />
+                    <img id="thumbnail" th:src="@{${user.getPhotosImagePath()}}" alt="photos reviews" class="img-fluid" />
                 </div>
             </div>
 
