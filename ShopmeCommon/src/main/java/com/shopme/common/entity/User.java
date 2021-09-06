@@ -124,4 +124,14 @@ public class User {
                 ", roles=" + roles +
                 '}';
     }
+
+    @Transient
+    public String getPhotosImagePath(){
+        //Nếu ID null hoặc photos null thì set ảnh cho User là ảnh mặc định
+        if (id == null || photos == null){
+            return "/images/default-image.png";
+        }
+        //Trả về ảnh tương ứng với ID người dùng
+        return "/user-photos/" + this.id + "/" + this.photos;
+    }
 }
