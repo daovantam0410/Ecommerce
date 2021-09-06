@@ -25,4 +25,26 @@ public class FileUploadUtil {
             throw new IOException("Could not save file: " + fileName, ex);
         }
     }
+
+    /*
+    Remove old photos in directory when update new photos.
+    Then directory include only photos updated.
+    */
+    public static void cleanDir(String dir){
+        Path dirPath = Paths.get(dir);
+
+        try {
+            Files.list(dirPath).forEach(file ->{
+                if (!Files.isDirectory(file)){
+                    try {
+                        Files.delete(file);
+                    }catch (IOException ex){
+                        System.out.println("Could not delete file: " + file);
+                    }
+                }
+            });
+        }catch (IOException e){
+            System.out.println("Could not list directory: " + dirPath);
+        }
+    }
 }

@@ -59,6 +59,9 @@ public class UserController {
             //Get path folder image as ID user
             String uploadDir = "user-photos/" + saveUser.getId();
 
+            //Remove old photos existed in directory
+            FileUploadUtil.cleanDir(uploadDir);
+
             //Save image
             FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
         }
