@@ -32,7 +32,7 @@ public class UserController {
 //
 //        return "users";
 
-        return listByPage(1, model,"firstName", "asc");
+        return listByPage(1, model,"firstName", "asc", null);
     }
 
     /*
@@ -41,11 +41,12 @@ public class UserController {
     @GetMapping("/users/page/{pageNumber}")
     public String listByPage(@PathVariable(name = "pageNumber") int pageNumber, Model model,
                              @Param("sortField") String sortField,
-                             @Param("sortDir") String sortDir){
+                             @Param("sortDir") String sortDir,
+                             @Param("keyword") String keyword){
 //        System.out.println("Sort Field: "+ sortField);
 //        System.out.println("Sort Order: "+ sortDir);
 
-        Page<User> page = userService.listByPage(pageNumber, sortField, sortDir);
+        Page<User> page = userService.listByPage(pageNumber, sortField, sortDir, keyword);
         //Lấy ra nội dung của của page
         List<User> listUsers = page.getContent();
 
@@ -71,6 +72,7 @@ public class UserController {
         model.addAttribute("sortField", sortField);
         model.addAttribute("sortDir", sortDir);
         model.addAttribute("reverseSortDir", reverseSortDir);
+        model.addAttribute("keyword", keyword);
 
         return "users";
     }
