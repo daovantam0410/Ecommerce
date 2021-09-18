@@ -30,7 +30,8 @@ public class UserService {
     public static final int USER_PER_PAGE = 4;
 
     List<User> listAll(){
-        return (List<User>) userRepository.findAll();
+        //Add sort method when export file csv data have will arrange ascending
+        return (List<User>) userRepository.findAll(Sort.by("firstName").ascending());
     }
 
     /*
