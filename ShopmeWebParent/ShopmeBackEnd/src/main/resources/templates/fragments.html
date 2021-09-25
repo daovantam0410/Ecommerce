@@ -1,7 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
+<head th:fragment="page_head(title)">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!--    Đáp ứng trên nền di động, mobile-->
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!--    dùng th:href="@{url}" để thymleaf diễn giải và hiển thị url của đường dẫn này chính xác-->
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/fontawesome/all.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/style.css}" />
+    <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+    <title>[[${title}]]</title>
 </head>
 <body>
     <th th:fragment="column_link(fieldName, columnLabel, removeTag)" th:remove="${removeTag}">
@@ -42,6 +54,10 @@
            th:href="@{'/users/delete/' + ${user.id}}"
            th:userId="${user.id}"
            title="Delete this user"></a>
+    </div>
+
+    <div th:fragment="footer" class="text-center m-3">
+        <p>Shopme control panel - Copyright @ Shopme</p>
     </div>
 </body>
 </html>
