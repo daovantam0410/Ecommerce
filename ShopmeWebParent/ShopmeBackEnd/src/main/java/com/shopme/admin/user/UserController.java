@@ -1,11 +1,16 @@
 package com.shopme.admin.user;
 
 import com.shopme.admin.FileUploadUtil;
+import com.shopme.admin.export.UserCsvExporter;
+import com.shopme.admin.export.UserExcelExporter;
+import com.shopme.admin.export.UserPdfExporter;
+import com.shopme.admin.security.ShopmeUserDetails;
 import com.shopme.common.entity.Role;
 import com.shopme.common.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -91,6 +96,39 @@ public class UserController {
         model.addAttribute("pageTitle", "Create New User");
 
         return "user_form";
+    }
+
+    @PostMapping("/account/update")
+    public String saveDetails(User user, RedirectAttributes redirectAttributes, @AuthenticationPrincipal ShopmeUserDetails loggedUser, @RequestParam("image")
+            MultipartFile multipartFile) throws IOException {
+        if (!multipartFile.isEmpty()){
+            //Get path file name
+            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+
+            //Set image for user
+            user.setPhotos(fileName);
+            User saveUser = userService.updateAccount(user);
+
+            //Get path folder image as ID user
+            String uploadDir = "user-photos/" + saveUser.getId();
+
+            //Remove old photos existed in directory
+            FileUploadUtil.cleanDir(uploadDir);
+
+            //Save image
+            FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+        }
+        else {
+            if (user.getPhotos().isEmpty()) user.setPhotos(null);
+            userService.updateAccount(user);
+        }
+
+        loggedUser.setFirstName(user.getFirstName());
+        loggedUser.setLastName(user.getLastName());
+
+        redirectAttributes.addFlashAttribute("message", "Your account details have been updated!");
+
+        return "redirect:/account";
     }
 
     @PostMapping("/users/save")

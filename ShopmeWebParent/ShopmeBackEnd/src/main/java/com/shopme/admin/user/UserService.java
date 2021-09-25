@@ -29,6 +29,10 @@ public class UserService {
 
     public static final int USER_PER_PAGE = 4;
 
+    public User getUserByEmail(String email){
+        return userRepository.getUserByEmail(email);
+    }
+
     List<User> listAll(){
         //Add sort method when export file csv data have will arrange ascending
         return (List<User>) userRepository.findAll(Sort.by("firstName").ascending());
@@ -76,6 +80,23 @@ public class UserService {
         else {
             encodePassword(user);
         }
+
+        return userRepository.save(user);
+    }
+
+    public User updateAccount(User userInForm){
+        User user = userRepository.findById(userInForm.getId()).get();
+
+        if (!userInForm.getPassword().isEmpty()){
+            user.setPassword(userInForm.getPassword());
+            encodePassword(user);
+        }
+        if (userInForm.getPhotos() != null){
+            user.setPhotos(userInForm.getPhotos());
+        }
+
+        user.setFirstName(userInForm.getFirstName());
+        user.setLastName(userInForm.getLastName());
 
         return userRepository.save(user);
     }
