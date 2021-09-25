@@ -54,7 +54,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .and()
                 .logout()
-                .permitAll();
+                .permitAll()
+                .and()
+                .rememberMe()
+                .key("Dvt@041097")
+                .tokenValiditySeconds(7 * 24 * 60 * 60); //token will expied for 7 day
     }
 
     @Override
